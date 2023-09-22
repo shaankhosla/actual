@@ -24,6 +24,7 @@ type NetWorthGraphProps = {
 };
 function NetWorthGraph({ style, graphData, compact }: NetWorthGraphProps) {
   const Chart = compact ? VictoryGroup : VictoryChart;
+  console.log('data in networth graph', graphData.data);
 
   return (
     <Container
