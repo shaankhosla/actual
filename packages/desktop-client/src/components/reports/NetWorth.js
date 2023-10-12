@@ -132,9 +132,6 @@ export default function NetWorth() {
           start={start}
           end={end}
           graphData={data.graphData}
-          domain={{
-            y: [data.lowestNetWorth * 0.99, data.highestNetWorth * 1.01],
-          }}
         />
 
         <View style={{ marginTop: 30 }}>

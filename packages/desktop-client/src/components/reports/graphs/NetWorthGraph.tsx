@@ -2,8 +2,9 @@ import React from 'react';
 
 import { css } from 'glamor';
 import {
-  AreaChart,
-  Area,
+  ComposedChart,
+  Line,
+  Bar,
   CartesianGrid,
   XAxis,
   YAxis,
@@ -20,9 +21,6 @@ type NetWorthGraphProps = {
   style?: CSSProperties;
   graphData;
   compact: boolean;
-  domain?: {
-    y?: [number, number];
-  };
 };
 type PotentialNumber = number | string | undefined | null;
 
@@ -33,12 +31,7 @@ const numberFormatterTooltip = (value: PotentialNumber): number | null => {
   return null; // or some default value for other cases
 };
 
-function NetWorthGraph({
-  style,
-  graphData,
-  compact,
-  domain,
-}: NetWorthGraphProps) {
+function NetWorthGraph({ style, graphData, compact }: NetWorthGraphProps) {
   const tickFormatter = tick => {
     return `${Math.round(tick).toLocaleString()}`; // Formats the tick values as strings with commas
   };
@@ -123,11 +116,12 @@ function NetWorthGraph({
           <ResponsiveContainer>
             <div>
               {!compact && <div style={{ marginTop: '15px' }} />}
-              <AreaChart
+              <ComposedChart
                 width={width}
                 height={height}
                 data={graphData.data}
                 margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                barCategoryGap={10}
               >
                 {compact ? null : (
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -135,9 +129,11 @@ function NetWorthGraph({
                 {compact ? null : <XAxis dataKey="x" />}
                 {compact ? null : (
                   <YAxis
-                    dataKey="y"
+                    // dataKey="assets"
+                    // domain={[graphData.data.minVal, graphData.data.maxVal]}
                     domain={['auto', 'auto']}
                     tickFormatter={tickFormatter}
+                    allowDataOverflow={true}
                   />
                 )}
                 <Tooltip
@@ -150,27 +146,45 @@ function NetWorthGraph({
                     <stop
                       offset={off}
                       stopColor={theme.reportsBlue}
-                      stopOpacity={0.2}
+                      stopOpacity={0.5}
                     />
                     <stop
                       offset={off}
                       stopColor={theme.reportsRed}
-                      stopOpacity={0.2}
+                      stopOpacity={0.8}
                     />
                   </linearGradient>
                 </defs>
 
-                <Area
+                <Line
                   type="linear"
                   dot={false}
                   activeDot={false}
-                  animationDuration={0}
+                  isAnimationActive={false}
                   dataKey="y"
-                  stroke={theme.reportsBlue}
-                  fill="url(#splitColor)"
+                  stroke="url(#splitColor)"
+                  strokeWidth={3}
                   fillOpacity={1}
                 />
-              </AreaChart>
+                {compact ? null : (
+                  <Bar
+                    dataKey="debt"
+                    barSize={20}
+                    fill={theme.reportsRed}
+                    isAnimationActive={false}
+                    fillOpacity={0.6}
+                  />
+                )}
+                {compact ? null : (
+                  <Bar
+                    dataKey="assets"
+                    barSize={20}
+                    fill={theme.reportsBlue}
+                    isAnimationActive={false}
+                    fillOpacity={0.6}
+                  />
+                )}
+              </ComposedChart>
             </div>
           </ResponsiveContainer>
         )
